@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// TEKS coverage colors
+				teks: {
+					'never': '#ea384c',      // Red for never taught
+					'rarely': '#FEF7CD',     // Soft yellow for rarely covered
+					'adequate': '#F2FCE2',   // Soft green for adequately covered
+					'over': '#D3E4FD',       // Soft blue for over-taught
+					'neutral': '#8E9196',    // Neutral gray for UI elements
+					'dark': '#1A1F2C'        // Dark purple for UI elements
 				}
 			},
 			borderRadius: {
