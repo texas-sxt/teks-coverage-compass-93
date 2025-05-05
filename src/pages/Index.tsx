@@ -10,13 +10,17 @@ import {
 } from "@/utils/mockData";
 
 const Index = () => {
-  const [gradeLevel, setGradeLevel] = useState("");
-  const [subject, setSubject] = useState("");
-  const [category, setCategory] = useState("");
+  const [gradeLevel, setGradeLevel] = useState("all-grades");
+  const [subject, setSubject] = useState("all-subjects");
+  const [category, setCategory] = useState("all-categories");
   const [viewMode, setViewMode] = useState<"teachers" | "weeks" | "departments">("teachers");
 
   // Filter TEKS standards based on selected filters
-  const filteredTEKSStandards = filterTEKSStandards(gradeLevel, subject, category);
+  const filteredTEKSStandards = filterTEKSStandards(
+    gradeLevel === "all-grades" ? "" : gradeLevel,
+    subject === "all-subjects" ? "" : subject,
+    category === "all-categories" ? "" : category
+  );
 
   // Handle export functionality
   const handleExport = (format: "pdf" | "png" | "csv") => {

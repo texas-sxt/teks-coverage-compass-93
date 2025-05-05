@@ -45,7 +45,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 <SelectValue placeholder="Select grade" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Grades</SelectItem>
+                <SelectItem value="all-grades">All Grades</SelectItem>
                 {gradeLevels.map((grade) => (
                   <SelectItem key={grade} value={grade}>
                     Grade {grade}
@@ -62,7 +62,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 <SelectValue placeholder="Select subject" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Subjects</SelectItem>
+                <SelectItem value="all-subjects">All Subjects</SelectItem>
                 {subjects.map((subj) => (
                   <SelectItem key={subj} value={subj}>
                     {subj}
@@ -79,7 +79,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all-categories">All Categories</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
