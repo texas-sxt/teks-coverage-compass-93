@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -26,15 +26,37 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   coverageLevel,
   children,
 }) => {
-  // Create data for mini chart
-  const chartData = [
-    { month: "Jan", count: Math.floor(Math.random() * 3) },
-    { month: "Feb", count: Math.floor(Math.random() * 3) },
-    { month: "Mar", count: Math.floor(Math.random() * 4) },
-    { month: "Apr", count: Math.floor(Math.random() * 5) },
-    { month: "May", count: coverage.count },
-  ];
+  // Create a local state for chart data that won't be affected by external state changes
+  const [chartData, setChartData] = useState<Array<{ month: string, count: number }>>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Generate chart data only once when component mounts or when the popover opens
+  useEffect(() => {
+    if (isOpen && chartData.length === 0) {
+      setChartData([
+        { month: "Jan", count: Math.floor(Math.random() * 3) },
+        { month: "Feb", count: Math.floor(Math.random() * 3) },
+        { month: "Mar", count: Math.floor(Math.random() * 4) },
+        { month: "Apr", count: Math.floor(Math.random() * 5) },
+        { month: "May", count: coverage.count },
+      ]);
+    }
+  }, [coverage.count, isOpen, chartData.length]);
 
+  // Add scroll listener to close popover on scroll
+  useEffect(() => {
+    if (isOpen) {
+      const handleScroll = () => {
+        setIsOpen(false);
+      };
+      
+      window.addEventListener('scroll', handleScroll, true);
+      return () => {
+        window.removeEventListener('scroll', handleScroll, true);
+      };
+    }
+  }, [isOpen]);
+  
   // Map coverage level to color
   const getCoverageColor = () => {
     switch (coverageLevel) {
@@ -47,11 +69,19 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   };
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent 
-        className="w-96 p-0 overflow-hidden animate-in zoom-in-95 duration-100 z-[100]" 
+        className="w-96 p-0 overflow-hidden animate-in zoom-in-95 duration-100 z-[250]" 
         side="right"
+        onEscapeKeyDown={(e) => {
+          setIsOpen(false);
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          setIsOpen(false);
+          e.preventDefault();
+        }}
       >
         <div className="flex flex-col">
           <div 

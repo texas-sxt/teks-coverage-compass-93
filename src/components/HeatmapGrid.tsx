@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -14,7 +14,6 @@ import {
   TEKSStandard,
   Teacher,
   getCoverage,
-  getTeacherById,
   calculateCoverageLevel,
   coverageColors,
   coverageTextColors,
@@ -34,6 +33,18 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ teksId: string; teacherId: string } | null>(null);
+
+  // Add effect to clear selected cell on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setSelectedCell(null);
+    };
+    
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, []);
 
   // Group TEKS standards by category
   const teksGroups = teksStandards.reduce<Record<string, TEKSStandard[]>>((acc, teks) => {
@@ -139,6 +150,13 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                               ${(!isHighlighted && !isSelected) ? 'group-hover:opacity-75' : ''}
                             `}
                             style={{ borderColor: 'transparent' }}
+                            onClick={() => {
+                              if (isSelected) {
+                                setSelectedCell(null);
+                              } else {
+                                setSelectedCell({ teksId: teks.id, teacherId: teacher.id });
+                              }
+                            }}
                           >
                             <InfoTooltip
                               coverage={coverage}
