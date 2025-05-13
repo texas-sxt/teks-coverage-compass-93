@@ -32,6 +32,9 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
   viewMode,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ teksId: string; teacherId: string } | null>(null);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [hoveredCol, setHoveredCol] = useState<string | null>(null);
+  const [selectedCell, setSelectedCell] = useState<{ teksId: string; teacherId: string } | null>(null);
 
   // Group TEKS standards by category
   const teksGroups = teksStandards.reduce<Record<string, TEKSStandard[]>>((acc, teks) => {
@@ -42,6 +45,15 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     return acc;
   }, {});
 
+  const handleCellClick = (teksId: string, teacherId: string) => {
+    // Toggle selection
+    if (selectedCell && selectedCell.teksId === teksId && selectedCell.teacherId === teacherId) {
+      setSelectedCell(null);
+    } else {
+      setSelectedCell({ teksId, teacherId });
+    }
+  };
+
   return (
     <div className="rounded-md border">
       <ScrollArea className="h-[calc(100vh-300px)]">
@@ -51,8 +63,20 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               <TableRow>
                 <TableHead className="w-48">TEKS Standard</TableHead>
                 {viewMode === "teachers" && teachers.map((teacher) => (
-                  <TableHead key={teacher.id} className="min-w-32 text-center">
-                    {teacher.name}
+                  <TableHead 
+                    key={teacher.id} 
+                    className={`min-w-32 text-center transition-colors duration-200 ${
+                      hoveredCol === teacher.id ? 'bg-muted/60' : ''
+                    }`}
+                    onMouseEnter={() => setHoveredCol(teacher.id)}
+                    onMouseLeave={() => setHoveredCol(null)}
+                  >
+                    <div className="font-medium transition-transform hover:scale-105 cursor-default">
+                      {teacher.name}
+                      <div className="text-xs text-muted-foreground font-normal">
+                        {teacher.campus}
+                      </div>
+                    </div>
                   </TableHead>
                 ))}
                 {/* Placeholder for departments and weeks views */}
@@ -78,13 +102,26 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                 <React.Fragment key={category}>
                   <TableRow className="bg-muted/50">
                     <TableCell colSpan={teachers.length + 1} className="font-medium">
-                      {category}
+                      <div className="flex items-center">
+                        <div className="w-1 h-4 bg-primary mr-2 rounded-full"></div>
+                        {category}
+                      </div>
                     </TableCell>
                   </TableRow>
                   {teksInCategory.map((teks) => (
-                    <TableRow key={teks.id}>
+                    <TableRow 
+                      key={teks.id}
+                      className={`group transition-colors duration-200 ${
+                        hoveredRow === teks.id ? 'bg-muted/30' : ''
+                      }`}
+                      onMouseEnter={() => setHoveredRow(teks.id)}
+                      onMouseLeave={() => setHoveredRow(null)}
+                    >
                       <TableCell className="font-mono">
-                        {teks.id}: {teks.description}
+                        <div className="flex items-center">
+                          <div className="font-bold mr-1">{teks.id}:</div> 
+                          <div className="text-sm">{teks.description}</div>
+                        </div>
                       </TableCell>
                       {viewMode === "teachers" && teachers.map((teacher) => {
                         const coverage = getCoverage(teks.id, teacher.id);
@@ -93,13 +130,31 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                         const coverageLevel = calculateCoverageLevel(coverage.count);
                         const bgColorClass = coverageColors[coverageLevel];
                         const textColorClass = coverageTextColors[coverageLevel];
+                        const isHovered = hoveredCell?.teksId === teks.id && hoveredCell?.teacherId === teacher.id;
+                        const isSelected = selectedCell?.teksId === teks.id && selectedCell?.teacherId === teacher.id;
+
+                        const isHighlighted = 
+                          hoveredRow === teks.id || 
+                          hoveredCol === teacher.id || 
+                          isHovered || 
+                          isSelected;
                         
                         return (
                           <TableCell 
                             key={teacher.id} 
-                            className={`text-center ${bgColorClass} ${textColorClass} hover:opacity-80 cursor-pointer`}
+                            className={`
+                              text-center ${bgColorClass} ${textColorClass}
+                              cursor-pointer relative p-0 border-2
+                              transition-all duration-200 ease-in-out
+                              ${isHovered ? 'scale-105 z-10 shadow-md' : ''}
+                              ${isSelected ? 'ring-2 ring-primary ring-offset-2 z-20' : ''}
+                              ${(isHighlighted && !isHovered && !isSelected) ? 'opacity-90 scale-[1.02]' : ''}
+                              ${(!isHighlighted && !isSelected) ? 'group-hover:opacity-75' : ''}
+                            `}
                             onMouseEnter={() => setHoveredCell({ teksId: teks.id, teacherId: teacher.id })}
                             onMouseLeave={() => setHoveredCell(null)}
+                            onClick={() => handleCellClick(teks.id, teacher.id)}
+                            style={{ borderColor: 'transparent' }}
                           >
                             <InfoTooltip
                               coverage={coverage}
@@ -107,7 +162,7 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                               teks={teks}
                               coverageLevel={coverageLevel}
                             >
-                              <div className="w-full h-full p-2">
+                              <div className="w-full h-full p-4 font-bold text-lg">
                                 {coverage.count}
                               </div>
                             </InfoTooltip>
