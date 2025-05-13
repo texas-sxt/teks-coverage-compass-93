@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { TEKSStandard } from "@/utils/mockData";
+import { toast } from "@/hooks/use-toast";
 
 export function useHeatmapState(teksStandards: TEKSStandard[]) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
@@ -31,17 +31,21 @@ export function useHeatmapState(teksStandards: TEKSStandard[]) {
   // Handle tooltip open state change
   const handleOpenChange = (open: boolean, teksId: string, teacherId: string) => {
     if (open) {
+      // If opening a tooltip, set this cell as selected
       setSelectedCell({ teksId, teacherId });
     } else {
+      // If closing, clear selection
       setSelectedCell(null);
     }
   };
 
   // Handle cell click
   const handleCellClick = (teksId: string, teacherId: string) => {
+    // If clicking the same cell that's already selected, deselect it
     if (selectedCell?.teksId === teksId && selectedCell?.teacherId === teacherId) {
       setSelectedCell(null);
     } else {
+      // Otherwise select this cell (automatically deselecting any previously selected cell)
       setSelectedCell({ teksId, teacherId });
     }
   };
