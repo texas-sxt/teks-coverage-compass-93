@@ -124,6 +124,12 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   isOpen,
   onOpenChange,
 }) => {
+  // Make sure lessons are converted to numbers
+  const numericLessons = useMemo(() => 
+    coverage.lessons.map(lesson => typeof lesson === 'string' ? parseInt(lesson, 10) : lesson), 
+    [coverage.lessons]
+  );
+
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -156,7 +162,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
             <CoverageTrendChart coverageLevel={coverageLevel} count={coverage.count} />
 
             {/* Lesson tags */}
-            {coverage.lessons.length > 0 && <LessonTags lessons={coverage.lessons} />}
+            {numericLessons.length > 0 && <LessonTags lessons={numericLessons} />}
           </div>
         </div>
       </PopoverContent>
