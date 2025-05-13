@@ -55,6 +55,15 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     return acc;
   }, {});
 
+  // Handle tooltip open state change
+  const handleOpenChange = (open: boolean, teksId: string, teacherId: string) => {
+    if (open) {
+      setSelectedCell({ teksId, teacherId });
+    } else {
+      setSelectedCell(null);
+    }
+  };
+
   return (
     <div className="rounded-md border">
       <ScrollArea className="h-[calc(100vh-300px)]">
@@ -163,6 +172,8 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                               teacher={teacher}
                               teks={teks}
                               coverageLevel={coverageLevel}
+                              isOpen={isSelected}
+                              onOpenChange={(open) => handleOpenChange(open, teks.id, teacher.id)}
                             >
                               <div className="w-full h-full p-4 font-bold text-lg">
                                 {coverage.count}

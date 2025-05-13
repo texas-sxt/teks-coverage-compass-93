@@ -1,11 +1,5 @@
 
 import React, { useState, useEffect } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { BarChart, ResponsiveContainer, Bar, XAxis } from "recharts";
 import { TEKSCoverage, CoverageLevel, Teacher, TEKSStandard } from "@/utils/mockData";
 import { ChartContainer } from "@/components/ui/chart";
@@ -17,6 +11,8 @@ interface InfoTooltipProps {
   teks: TEKSStandard;
   coverageLevel: CoverageLevel;
   children: React.ReactNode;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const InfoTooltip: React.FC<InfoTooltipProps> = ({
@@ -25,10 +21,11 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   teks,
   coverageLevel,
   children,
+  isOpen,
+  onOpenChange,
 }) => {
   // Create a local state for chart data that won't be affected by external state changes
   const [chartData, setChartData] = useState<Array<{ month: string, count: number }>>([]);
-  const [isOpen, setIsOpen] = useState(false);
   
   // Generate chart data only once when component mounts or when the popover opens
   useEffect(() => {
@@ -47,7 +44,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   useEffect(() => {
     if (isOpen) {
       const handleScroll = () => {
-        setIsOpen(false);
+        onOpenChange(false);
       };
       
       window.addEventListener('scroll', handleScroll, true);
@@ -55,7 +52,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
         window.removeEventListener('scroll', handleScroll, true);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, onOpenChange]);
   
   // Map coverage level to color
   const getCoverageColor = () => {
@@ -69,17 +66,17 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent 
         className="w-96 p-0 overflow-hidden animate-in zoom-in-95 duration-100 z-[250]" 
         side="right"
         onEscapeKeyDown={(e) => {
-          setIsOpen(false);
+          onOpenChange(false);
           e.preventDefault();
         }}
         onInteractOutside={(e) => {
-          setIsOpen(false);
+          onOpenChange(false);
           e.preventDefault();
         }}
       >
