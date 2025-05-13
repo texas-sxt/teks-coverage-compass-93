@@ -28,7 +28,7 @@ export function useHeatmapState(teksStandards: TEKSStandard[]) {
     };
   }, []);
 
-  // Handle tooltip open state change
+  // Handle tooltip open state change - this is called from the Popover onOpenChange
   const handleOpenChange = (open: boolean, teksId: string, teacherId: string) => {
     if (open) {
       // If opening a tooltip, set this cell as selected
@@ -43,7 +43,7 @@ export function useHeatmapState(teksStandards: TEKSStandard[]) {
   const handleCellClick = (teksId: string, teacherId: string) => {
     // If clicking the same cell that's already selected, deselect it
     if (selectedCell?.teksId === teksId && selectedCell?.teacherId === teacherId) {
-      setSelectedCell(null);
+      setSelectedCell(null); // This deselects the cell
     } else {
       // Otherwise select this cell (automatically deselecting any previously selected cell)
       setSelectedCell({ teksId, teacherId });

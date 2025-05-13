@@ -35,6 +35,12 @@ const HeatmapCell: React.FC<HeatmapCellProps> = ({
   const bgColorClass = coverageColors[coverageLevel];
   const textColorClass = coverageTextColors[coverageLevel];
 
+  // Handle cell click
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    onClick(); // Call the parent's click handler
+  };
+
   return (
     <TableCell 
       className={`
@@ -46,7 +52,7 @@ const HeatmapCell: React.FC<HeatmapCellProps> = ({
         ${(!isHighlighted && !isSelected) ? 'group-hover:opacity-75' : ''}
       `}
       style={{ borderColor: 'transparent' }}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <InfoTooltip
         coverage={coverage}

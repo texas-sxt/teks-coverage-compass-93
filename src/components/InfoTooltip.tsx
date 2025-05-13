@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from "react";
 import { BarChart, ResponsiveContainer, Bar, XAxis } from "recharts";
 import { TEKSCoverage, CoverageLevel, Teacher, TEKSStandard } from "@/utils/mockData";
@@ -131,19 +130,16 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
   );
 
   return (
-    <Popover open={isOpen} onOpenChange={onOpenChange}>
+    <Popover 
+      open={isOpen} 
+      onOpenChange={onOpenChange}
+    >
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent 
         className="w-96 p-0 overflow-hidden animate-in zoom-in-95 duration-100 z-[250]" 
         side="right"
-        onEscapeKeyDown={(e) => {
-          onOpenChange(false);
-          e.preventDefault();
-        }}
-        onInteractOutside={(e) => {
-          onOpenChange(false);
-          e.preventDefault();
-        }}
+        onInteractOutside={() => onOpenChange(false)}
+        onEscapeKeyDown={() => onOpenChange(false)}
       >
         <div className="flex flex-col">
           {/* Header with TEKS info */}
