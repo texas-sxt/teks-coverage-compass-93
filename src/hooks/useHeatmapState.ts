@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { TEKSStandard } from "@/utils/mockData";
 import { toast } from "@/hooks/use-toast";
@@ -30,11 +31,11 @@ export function useHeatmapState(teksStandards: TEKSStandard[]) {
 
   // Handle tooltip open state change - this is called from the Popover onOpenChange
   const handleOpenChange = (open: boolean, teksId: string, teacherId: string) => {
-    // When the tooltip is closed by any means, clear the selected cell
     if (!open) {
+      // When closing the tooltip, clear the selected cell completely
       setSelectedCell(null);
-    } else if (open) {
-      // If opening a tooltip, set this cell as selected
+    } else {
+      // When opening, set this as the selected cell
       setSelectedCell({ teksId, teacherId });
     }
   };
@@ -43,7 +44,8 @@ export function useHeatmapState(teksStandards: TEKSStandard[]) {
   const handleCellClick = (teksId: string, teacherId: string) => {
     // If clicking the same cell that's already selected, deselect it
     if (selectedCell?.teksId === teksId && selectedCell?.teacherId === teacherId) {
-      setSelectedCell(null); // This explicitly deselects the cell
+      // Close tooltip by deselecting the cell
+      setSelectedCell(null);
     } else {
       // Otherwise select this cell (automatically deselecting any previously selected cell)
       setSelectedCell({ teksId, teacherId });
