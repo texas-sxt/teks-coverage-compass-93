@@ -31,7 +31,6 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
   teachers,
   viewMode,
 }) => {
-  const [hoveredCell, setHoveredCell] = useState<{ teksId: string; teacherId: string } | null>(null);
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredCol, setHoveredCol] = useState<string | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ teksId: string; teacherId: string } | null>(null);
@@ -44,15 +43,6 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     acc[teks.category].push(teks);
     return acc;
   }, {});
-
-  const handleCellClick = (teksId: string, teacherId: string) => {
-    // Toggle selection
-    if (selectedCell && selectedCell.teksId === teksId && selectedCell.teacherId === teacherId) {
-      setSelectedCell(null);
-    } else {
-      setSelectedCell({ teksId, teacherId });
-    }
-  };
 
   return (
     <div className="rounded-md border">
@@ -130,13 +120,11 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                         const coverageLevel = calculateCoverageLevel(coverage.count);
                         const bgColorClass = coverageColors[coverageLevel];
                         const textColorClass = coverageTextColors[coverageLevel];
-                        const isHovered = hoveredCell?.teksId === teks.id && hoveredCell?.teacherId === teacher.id;
                         const isSelected = selectedCell?.teksId === teks.id && selectedCell?.teacherId === teacher.id;
 
                         const isHighlighted = 
                           hoveredRow === teks.id || 
                           hoveredCol === teacher.id || 
-                          isHovered || 
                           isSelected;
                         
                         return (
@@ -146,14 +134,10 @@ const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                               text-center ${bgColorClass} ${textColorClass}
                               cursor-pointer relative p-0 border-2
                               transition-all duration-200 ease-in-out
-                              ${isHovered ? 'scale-105 z-10 shadow-md' : ''}
                               ${isSelected ? 'ring-2 ring-primary ring-offset-2 z-20' : ''}
-                              ${(isHighlighted && !isHovered && !isSelected) ? 'opacity-90 scale-[1.02]' : ''}
+                              ${(isHighlighted && !isSelected) ? 'opacity-90 scale-[1.02]' : ''}
                               ${(!isHighlighted && !isSelected) ? 'group-hover:opacity-75' : ''}
                             `}
-                            onMouseEnter={() => setHoveredCell({ teksId: teks.id, teacherId: teacher.id })}
-                            onMouseLeave={() => setHoveredCell(null)}
-                            onClick={() => handleCellClick(teks.id, teacher.id)}
                             style={{ borderColor: 'transparent' }}
                           >
                             <InfoTooltip
