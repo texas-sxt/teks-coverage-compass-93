@@ -35,23 +35,15 @@ const HeatmapCell: React.FC<HeatmapCellProps> = ({
   const bgColorClass = coverageColors[coverageLevel];
   const textColorClass = coverageTextColors[coverageLevel];
 
-  // Handle cell click
+  // Handle cell click - prevent event bubbling and handle selection
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-
-    // Call the parent's click handler which handles selection logic
+    e.stopPropagation();
     onClick();
     
-    // If already selected, manually trigger onOpenChange to close the tooltip
+    // If already selected, close the tooltip
     if (isSelected) {
       onOpenChange(false);
     }
-  };
-
-  // Handle tooltip open state change
-  const handleTooltipOpenChange = (open: boolean) => {
-    // Pass the open state to parent component
-    onOpenChange(open);
   };
 
   return (
@@ -73,7 +65,7 @@ const HeatmapCell: React.FC<HeatmapCellProps> = ({
         teks={teks}
         coverageLevel={coverageLevel}
         isOpen={isSelected}
-        onOpenChange={handleTooltipOpenChange}
+        onOpenChange={onOpenChange}
       >
         <div className="w-full h-full p-4 font-bold text-lg">
           {coverage.count}
